@@ -1,15 +1,14 @@
 import { useState, type ReactNode } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { BlackHole } from './BlackHole'
-import { useScrollProgress } from '../../hooks/useScrollProgress'
+import { useIntroAnimation } from '../../hooks/useIntroAnimation'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 
-const INTRO_HEIGHT_VH = 300
 const REVEAL_AT = 0.85
 
 export function IntroSection({ children }: { children: ReactNode }) {
   const [revealed, setRevealed] = useState(false)
-  const progressRef = useScrollProgress(INTRO_HEIGHT_VH, (progress) => {
+  const progressRef = useIntroAnimation((progress) => {
     setRevealed(progress >= REVEAL_AT)
   })
   const reducedMotion = usePrefersReducedMotion()
@@ -23,7 +22,7 @@ export function IntroSection({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="intro" style={{ height: `${INTRO_HEIGHT_VH}vh` }}>
+    <div className="intro">
       <div className="intro__sticky">
         <Canvas
           className="intro__canvas"

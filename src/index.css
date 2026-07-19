@@ -85,7 +85,7 @@ a {
   display: flex;
   flex-direction: column;
   background: var(--void-black);
-  /* fade-in en el tramo final del scroll (0.85 -> 1.0) */
+  /* fade-in en el tramo final de la caída (0.85 -> 1.0) */
   opacity: clamp(0, calc((var(--intro-progress) - 0.85) / 0.15), 1);
   pointer-events: none;
 }
@@ -154,6 +154,7 @@ a {
   font-weight: 900;
   letter-spacing: 0.08em;
   line-height: 1;
+  view-transition-name: menu-title;
 }
 
 .menu__title span {
@@ -190,6 +191,7 @@ a {
 }
 
 .menu__cta {
+  view-transition-name: menu-cta;
   margin-top: 0.6rem;
   padding: 0.85rem 2.2rem;
   border-radius: 999px;
@@ -204,4 +206,267 @@ a {
 .menu__cta:hover {
   transform: translateY(-2px);
   box-shadow: 0 0 48px rgba(168, 85, 247, 0.55);
+}
+
+/* ---------- Menú dockeado como navbar superior ---------- */
+
+.menu--docked {
+  position: relative;
+  /* .section-panel forma stacking context (view-transition-name); la barra y su desplegable van encima */
+  z-index: 10;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  padding: 0.9rem 2rem;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.18);
+}
+
+.menu--docked .menu__title {
+  font-size: 1.35rem;
+  letter-spacing: 0.1em;
+}
+
+.menu--docked .menu__nav {
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+  gap: 0.2rem;
+}
+
+.menu--docked .menu__item {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+}
+
+/* en fila, el letter-spacing del hover movería a los vecinos */
+.menu--docked .menu__item:hover,
+.menu--docked .menu__item:focus-visible {
+  letter-spacing: 0.14em;
+}
+
+.menu__item.is-active {
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.85);
+}
+
+.menu--docked .menu__cta {
+  margin: 0 0 0 0.8rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.8rem;
+}
+
+.menu__burger {
+  display: none;
+  background: none;
+  border: 0;
+  color: var(--void-text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .menu--docked {
+    padding: 0.8rem 1.2rem;
+  }
+
+  .menu--docked .menu__burger {
+    display: block;
+  }
+
+  .menu--docked .menu__nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    padding: 1rem 1.5rem 1.4rem;
+    gap: 0.4rem;
+    background: rgba(10, 4, 20, 0.97);
+    border-bottom: 1px solid rgba(168, 85, 247, 0.18);
+  }
+
+  .menu--docked .menu__nav.is-open {
+    display: flex;
+    animation: nav-drop 0.25s ease;
+  }
+
+  .menu--docked .menu__cta {
+    margin: 0.6rem auto 0;
+  }
+}
+
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* ---------- Panel de contenido de sección ---------- */
+
+.section-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 3rem 2rem 4rem;
+  view-transition-name: section-panel;
+}
+
+.section-panel__inner {
+  max-width: 42rem;
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+  line-height: 1.7;
+}
+
+.section-panel h2 {
+  font-size: 1.7rem;
+  letter-spacing: 0.06em;
+  color: var(--void-bright);
+}
+
+/* ---------- Sección Miembros: foto grupal 3D ---------- */
+
+.section-panel__inner--wide {
+  max-width: 78rem;
+}
+
+.members-stage {
+  position: relative;
+}
+
+.members-scene {
+  height: min(72vh, 640px);
+  border: 1px solid rgba(168, 85, 247, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+  /* fondo reemplazable: cambiar public/members-bg.png por cualquier paisaje de Minecraft;
+     encima lleva tinte oscuro + halo morado para que las skins resalten */
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 88%, rgba(76, 29, 149, 0.45), transparent 70%),
+    linear-gradient(rgba(10, 4, 20, 0.28), rgba(10, 4, 20, 0.55)),
+    url('/members-bg.png') center / cover no-repeat;
+}
+
+/* r3f pone touch-action: none en el canvas; el panel debe poder scrollearse por encima */
+.members-scene canvas {
+  touch-action: pan-y !important;
+}
+
+.member-card {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  min-width: 14rem;
+  max-width: calc(100% - 2rem);
+  padding: 1rem 2.6rem 1rem 1.2rem;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 12px;
+  background: rgba(14, 6, 28, 0.92);
+  box-shadow: 0 0 32px rgba(168, 85, 247, 0.25);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.member-card.is-open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.member-card h3 {
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  color: var(--void-bright);
+}
+
+.member-card__role {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--void-muted);
+}
+
+.member-card__close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.6rem;
+  background: none;
+  border: 0;
+  color: var(--void-muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.member-card__close:hover,
+.member-card__close:focus-visible {
+  color: #ffffff;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-card {
+    transition: none;
+  }
+}
+
+/* ---------- View transitions (morph menú <-> navbar) ---------- */
+
+::view-transition-group(*) {
+  animation-duration: 0.8s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(section-panel) {
+  animation: vt-fade-out 0.15s ease both;
+}
+
+/* el contenido espera a que los items se acomoden y entra con fade-up */
+::view-transition-new(section-panel) {
+  animation: vt-panel-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
