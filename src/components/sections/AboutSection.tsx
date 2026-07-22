@@ -1,3 +1,5 @@
+import { AboutTimeline } from '../about/AboutTimeline'
+
 export function AboutSection() {
   return (
     <section className="section-panel" id="acerca" aria-labelledby="acerca-titulo">
@@ -16,6 +18,7 @@ export function AboutSection() {
           Este texto es un placeholder: acá irá la historia del servidor, sus temporadas y lo que
           hace única a la comunidad.
         </p>
+        <AboutTimeline />
       </div>
     </section>
   )
